@@ -70,13 +70,15 @@ const heartsEl = document.getElementById("hearts")!;
 const wrongLettersEl = document.getElementById("wrongLetters")!;
 const letterInput = document.getElementById("letterInput") as HTMLInputElement;
 const guessBtn = document.getElementById("guessBtn")!;
-const newGameBtn = document.getElementById("newGameBtn")!;
 const modal = document.getElementById("modal") as HTMLElement;
 const modalTitle = document.getElementById("modalTitle")!;
 const modalText = document.getElementById("modalText")!;
 const modalBtn = document.getElementById("modalBtn")!;
 const playerNameInput = document.getElementById("playerNameInput") as HTMLInputElement;
 const gameTimerEl = document.getElementById("gameTimer")!;
+const hudGameTimerEl = document.getElementById("hudGameTimer")!;
+const hudLivesFractionEl = document.getElementById("hudLivesFraction")!;
+const hudGuessedChipsEl = document.getElementById("hudGuessedChips")!;
 const rankPreviewEl = document.getElementById("rankPreview")!;
 const leaderboardBody = document.getElementById("leaderboardBody")!;
 
@@ -199,7 +201,9 @@ function stopGameTimer(): void {
 function tickTimerAndPreview(): void {
   if (modal.hidden === false) return;
   const elapsed = Math.round(performance.now() - gameStartTime);
-  gameTimerEl.textContent = formatDurationMs(elapsed);
+  const formatted = formatDurationMs(elapsed);
+  gameTimerEl.textContent = formatted;
+  hudGameTimerEl.textContent = formatted;
   const entries = loadLeaderboard();
   const rAll = hypotheticalRank(entries, elapsed, false);
   const rToday = hypotheticalRank(entries, elapsed, true);
@@ -209,7 +213,9 @@ function tickTimerAndPreview(): void {
 function startGameTimer(): void {
   stopGameTimer();
   gameStartTime = performance.now();
-  gameTimerEl.textContent = formatDurationMs(0);
+  const zero = formatDurationMs(0);
+  gameTimerEl.textContent = zero;
+  hudGameTimerEl.textContent = zero;
   tickTimerAndPreview();
   timerId = setInterval(tickTimerAndPreview, TIMER_MS);
 }
@@ -282,6 +288,7 @@ function renderHearts(): void {
     heartsEl.appendChild(span);
   }
   heartsEl.setAttribute("aria-label", `${lives} z ${MAX_LIVES} životů`);
+  hudLivesFractionEl.textContent = `${lives}/${MAX_LIVES}`;
 }
 
 function renderWord(): void {
@@ -319,6 +326,22 @@ function renderWrong(): void {
   wrongLettersEl.textContent = Array.from(wrong)
     .sort((a, b) => a.localeCompare(b, "cs"))
     .join("  ");
+  renderHudGuessed();
+}
+
+function renderHudGuessed(): void {
+  hudGuessedChipsEl.innerHTML = "";
+  const letters = Array.from(guessed).sort((a, b) => a.localeCompare(b, "cs"));
+  for (const letter of letters) {
+    const span = document.createElement("span");
+    span.className = "hud-chip" + (wrong.has(letter) ? " hud-chip-wrong" : "");
+    span.textContent = letter.toUpperCase();
+    span.setAttribute(
+      "aria-label",
+      wrong.has(letter) ? `Špatně: ${letter}` : `Zkoušeno: ${letter}`,
+    );
+    hudGuessedChipsEl.appendChild(span);
+  }
 }
 
 function checkWin(): boolean {
@@ -508,6 +531,26 @@ letterInput.addEventListener("input", () => {
   if (v.length > 1) letterInput.value = v.slice(-1);
 });
 
+letterInput.addEventListener("focus", () => {
+  requestAnimationFrame(() => {
+    letterInput.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  });
+});
+
+function updateKeyboardCover(): void {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const cover = Math.max(0, window.innerHeight - vv.height);
+  document.documentElement.style.setProperty("--keyboard-cover", `${cover}px`);
+}
+
+const vv = window.visualViewport;
+if (vv) {
+  vv.addEventListener("resize", updateKeyboardCover);
+  vv.addEventListener("scroll", updateKeyboardCover);
+  updateKeyboardCover();
+}
+
 document.addEventListener("keydown", (e) => {
   if (modal.hidden === false) return;
   if (e.target === letterInput || e.target === playerNameInput || e.target instanceof HTMLButtonElement)
@@ -518,7 +561,9 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-newGameBtn.addEventListener("click", initGame);
+document.querySelectorAll(".js-new-game").forEach((btn) => {
+  btn.addEventListener("click", initGame);
+});
 modalBtn.addEventListener("click", () => {
   closeModal();
   initGame();

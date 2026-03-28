@@ -1,3 +1,7 @@
+html {
+  --keyboard-cover: 0px;
+}
+
 :root {
   --bg: #0d0f14;
   --bg-elevated: #161a24;
@@ -44,6 +48,7 @@ body {
   max-width: 640px;
   margin: 0 auto;
   padding: clamp(1.25rem, 4vw, 2rem);
+  padding-bottom: calc(clamp(1.25rem, 4vw, 2rem) + var(--keyboard-cover, 0px));
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -444,4 +449,151 @@ body {
 
 .modal-title.lose {
   color: var(--danger);
+}
+
+/* Mobilní sticky HUD — na širších displejích skryto */
+.game-sticky-hud {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .game-sticky-hud {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    margin: -0.25rem -0.35rem 0;
+    padding-left: max(0.65rem, env(safe-area-inset-left));
+    padding-right: max(0.65rem, env(safe-area-inset-right));
+    padding-bottom: 0.75rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  }
+
+  .game-sticky-hud.panel {
+    padding: max(0.65rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) 0.65rem
+      max(0.75rem, env(safe-area-inset-left));
+  }
+
+  .hud-row-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+  }
+
+  .hud-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .hud-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .hud-timer {
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  .hud-lives-fraction {
+    font-family: "Cinzel", Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hud-new-game {
+    width: auto;
+    flex-shrink: 0;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .hud-row-letters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.55rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .hud-letters-label {
+    align-self: flex-start;
+  }
+
+  .hud-guessed-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    min-height: 1.5rem;
+    max-height: 4.5rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hud-guessed-chips:empty::after {
+    content: "—";
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .hud-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.65rem;
+    height: 1.65rem;
+    padding: 0 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-muted);
+  }
+
+  .hud-chip.hud-chip-wrong {
+    color: var(--danger);
+    border-color: rgba(201, 76, 76, 0.45);
+    background: rgba(201, 76, 76, 0.12);
+  }
+
+  .timer-rank-panel .timer-row {
+    display: none;
+  }
+
+  .lives-panel {
+    display: none;
+  }
+
+  .wrong-section {
+    display: none;
+  }
+
+  .footer .js-new-game {
+    display: none;
+  }
+
+  .word-section {
+    padding: 0.85rem 0 1rem;
+  }
+
+  .app {
+    gap: 1rem;
+  }
 }

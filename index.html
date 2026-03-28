@@ -17,6 +17,24 @@
       <p class="subtitle">Šibenice ve světě Harryho Pottera</p>
     </header>
 
+    <section class="game-sticky-hud panel" aria-label="Stav hry (mobil)">
+      <div class="hud-row hud-row-main">
+        <div class="hud-block hud-time">
+          <span class="hud-label">Čas</span>
+          <span class="hud-timer game-timer" id="hudGameTimer" aria-live="polite">0:00</span>
+        </div>
+        <div class="hud-block hud-lives-block">
+          <span class="hud-label">Životy</span>
+          <span class="hud-lives-fraction" id="hudLivesFraction" aria-live="polite">10/10</span>
+        </div>
+        <button type="button" class="btn btn-ghost hud-new-game js-new-game">Nová hra</button>
+      </div>
+      <div class="hud-row hud-row-letters">
+        <span class="hud-label hud-letters-label">Zkoušeno</span>
+        <div class="hud-guessed-chips" id="hudGuessedChips" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="panel player-panel" aria-label="Hráč">
       <label for="playerNameInput" class="input-label">Jméno hráče</label>
       <input
@@ -70,7 +88,7 @@
     </section>
 
     <footer class="footer">
-      <button type="button" class="btn btn-ghost" id="newGameBtn">Nová hra</button>
+      <button type="button" class="btn btn-ghost js-new-game" id="newGameBtn">Nová hra</button>
     </footer>
 
     <section class="panel leaderboard-panel" aria-label="Žebříček">
