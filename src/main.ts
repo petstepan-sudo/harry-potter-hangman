@@ -81,6 +81,7 @@ const hudLivesFractionEl = document.getElementById("hudLivesFraction")!;
 const hudGuessedChipsEl = document.getElementById("hudGuessedChips")!;
 const rankPreviewEl = document.getElementById("rankPreview")!;
 const leaderboardBody = document.getElementById("leaderboardBody")!;
+const gameStickyHudEl = document.querySelector<HTMLElement>(".game-sticky-hud");
 
 let leaderboardCache: LeaderboardEntry[] = [];
 let leaderboardLoadError: string | null = null;
@@ -342,6 +343,7 @@ function renderHudGuessed(): void {
     );
     hudGuessedChipsEl.appendChild(span);
   }
+  updateGameHudHeight();
 }
 
 function checkWin(): boolean {
@@ -421,10 +423,17 @@ function openModal(
   modalBtn.focus();
 }
 
+function shouldAutoFocusLetterInput(): boolean {
+  if (typeof window.matchMedia !== "function") return true;
+  const narrow = window.matchMedia("(max-width: 700px)").matches;
+  const touchPrimary = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  return !(narrow && touchPrimary);
+}
+
 function closeModal(): void {
   modal.hidden = true;
   rankPreviewEl.hidden = false;
-  letterInput.focus();
+  if (shouldAutoFocusLetterInput()) letterInput.focus();
 }
 
 async function tryLetter(raw: string): Promise<void> {
@@ -492,7 +501,7 @@ function initGame(): void {
     renderLeaderboard();
     tickTimerAndPreview();
   });
-  letterInput.focus();
+  if (shouldAutoFocusLetterInput()) letterInput.focus();
 }
 
 try {
@@ -531,25 +540,42 @@ letterInput.addEventListener("input", () => {
   if (v.length > 1) letterInput.value = v.slice(-1);
 });
 
-letterInput.addEventListener("focus", () => {
-  requestAnimationFrame(() => {
-    letterInput.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  });
-});
+function updateGameHudHeight(): void {
+  if (!gameStickyHudEl) return;
+  const h = gameStickyHudEl.offsetHeight;
+  document.documentElement.style.setProperty("--game-hud-height", `${h}px`);
+}
 
 function updateKeyboardCover(): void {
   const vv = window.visualViewport;
-  if (!vv) return;
-  const cover = Math.max(0, window.innerHeight - vv.height);
+  if (!vv) {
+    document.documentElement.style.setProperty("--keyboard-cover", "0px");
+    return;
+  }
+  const cover = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
   document.documentElement.style.setProperty("--keyboard-cover", `${cover}px`);
+}
+
+function scheduleKeyboardInsetRefresh(): void {
+  window.setTimeout(() => updateKeyboardCover(), 250);
+}
+
+if (gameStickyHudEl && typeof ResizeObserver !== "undefined") {
+  const ro = new ResizeObserver(() => updateGameHudHeight());
+  ro.observe(gameStickyHudEl);
+  updateGameHudHeight();
 }
 
 const vv = window.visualViewport;
 if (vv) {
   vv.addEventListener("resize", updateKeyboardCover);
   vv.addEventListener("scroll", updateKeyboardCover);
-  updateKeyboardCover();
 }
+window.addEventListener("resize", updateKeyboardCover);
+updateKeyboardCover();
+
+letterInput.addEventListener("blur", scheduleKeyboardInsetRefresh);
+playerNameInput.addEventListener("blur", scheduleKeyboardInsetRefresh);
 
 document.addEventListener("keydown", (e) => {
   if (modal.hidden === false) return;

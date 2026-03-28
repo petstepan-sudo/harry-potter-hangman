@@ -1,5 +1,6 @@
 html {
   --keyboard-cover: 0px;
+  --game-hud-height: 0px;
 }
 
 :root {
@@ -26,6 +27,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
@@ -50,6 +52,7 @@ body {
   padding: clamp(1.25rem, 4vw, 2rem);
   padding-bottom: calc(clamp(1.25rem, 4vw, 2rem) + var(--keyboard-cover, 0px));
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -451,22 +454,28 @@ body {
   color: var(--danger);
 }
 
-/* Mobilní sticky HUD — na širších displejích skryto */
+/* Mobilní fixed HUD (iOS Safari: stabilnější než sticky při klávesnici) — na širších displejích skryto */
 .game-sticky-hud {
   display: none;
 }
 
 @media (max-width: 700px) {
+  .app {
+    padding-top: calc(var(--game-hud-height, 0px) + clamp(1.25rem, 4vw, 2rem));
+    gap: 1rem;
+  }
+
   .game-sticky-hud {
     display: block;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 50;
-    padding-top: max(0.75rem, env(safe-area-inset-top));
-    margin: -0.25rem -0.35rem 0;
-    padding-left: max(0.65rem, env(safe-area-inset-left));
-    padding-right: max(0.65rem, env(safe-area-inset-right));
-    padding-bottom: 0.75rem;
+    width: 100%;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -591,9 +600,5 @@ body {
 
   .word-section {
     padding: 0.85rem 0 1rem;
-  }
-
-  .app {
-    gap: 1rem;
   }
 }
