@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hádání postav — Harry Potter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <main class="app">
+    <header class="header">
+      <h1 class="title">Hádání postav</h1>
+      <p class="subtitle">Šibenice ve světě Harryho Pottera</p>
+    </header>
+
+    <section class="panel player-panel" aria-label="Hráč">
+      <label for="playerNameInput" class="input-label">Jméno hráče</label>
+      <input
+        type="text"
+        id="playerNameInput"
+        maxlength="24"
+        autocomplete="nickname"
+        spellcheck="false"
+        placeholder="Hráč"
+        class="player-name-input"
+      />
+    </section>
+
+    <section class="panel timer-rank-panel" aria-label="Čas a náhled žebříčku">
+      <div class="timer-row">
+        <span class="timer-label">Čas hry</span>
+        <span id="gameTimer" class="game-timer" aria-live="polite">0:00</span>
+      </div>
+      <p id="rankPreview" class="rank-preview" aria-live="polite"></p>
+    </section>
+
+    <section class="panel lives-panel" aria-label="Životy">
+      <span class="lives-label">Životy</span>
+      <div class="hearts" id="hearts" role="img" aria-live="polite"></div>
+    </section>
+
+    <section class="word-section" aria-label="Hádané jméno">
+      <div class="word-row" id="wordDisplay"></div>
+    </section>
+
+    <section class="panel input-section">
+      <label for="letterInput" class="input-label">Zadej písmeno</label>
+      <div class="input-row">
+        <input
+          type="text"
+          id="letterInput"
+          maxlength="1"
+          autocomplete="off"
+          spellcheck="false"
+          inputmode="text"
+          aria-describedby="hint-letters"
+        />
+        <button type="button" class="btn btn-primary" id="guessBtn">Hádat</button>
+      </div>
+      <p class="hint" id="hint-letters">Použij klávesnici A–Z nebo česká písmena. Mezery v jménech jsou vidět od začátku.</p>
+    </section>
+
+    <section class="panel wrong-section" aria-label="Špatná písmena">
+      <h2 class="section-title">Už vyzkoušeno (chybně)</h2>
+      <div class="wrong-letters" id="wrongLetters"></div>
+    </section>
+
+    <footer class="footer">
+      <button type="button" class="btn btn-ghost" id="newGameBtn">Nová hra</button>
+    </footer>
+
+    <section class="panel leaderboard-panel" aria-label="Žebříček">
+      <h2 class="section-title">Žebříček</h2>
+      <div class="leaderboard-wrap">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Hráč</th>
+              <th scope="col">Datum</th>
+              <th scope="col">Čas</th>
+              <th scope="col">Délka</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <p class="modal-text" id="modalText"></p>
+      <button type="button" class="btn btn-primary" id="modalBtn">Hrát znovu</button>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
